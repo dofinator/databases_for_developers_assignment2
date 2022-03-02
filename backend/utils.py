@@ -4,34 +4,25 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 
-def send_mail(file,failed_messages,information):
-    failed_percentage = 0
-    date_time = datetime.now()
+def send_mail(name, medicine, email):
     from_addr = 'praktikrealview@gmail.com'
-    to_addr = ['cph-cw109@cphbusiness.dk', 'cph-sd152@cphbusiness.dk']
-    subject = 'Statstidede parser'
+    to_addr = email
+    subject = 'Renewal of medicine'
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = from_addr
-    msg['To'] = ", ".join(to_addr)
+    msg['To'] = email
     msg.add_header('Content-Type', 'text')
     html = f"""
     <!DOCTYPE html>
 <html>
 <body>
 
-<h3>[Information]</h3>
-
-<p>{file}: {information}</p>
+<p>Dear {name}</p>
+<p>It is time for your renewal of {medicine}. You are able to pick up your prescription at any pharmacy you wish.</p>
+<p>Kind regards</p>
+<p>Apoteket</p>
 </br>
-<h3>[Time]</h3>
-<p>{date_time}</p>
-</br>
-<h3>[File]</h3>
-<p>{file}
-<h3>[Messages with errors]</h3>
-<pre>{failed_messages}</pre>
-
 </body>
 </html>
 
