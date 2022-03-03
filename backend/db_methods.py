@@ -104,10 +104,12 @@ def check_if_has_prescription(full_name):
         with conn.cursor() as cursor:
             sql_statement = "Select id from db_assignment2.prescription where fk_patient_id = (select id from db_assignment2.patient p where full_name = %s)"
             cursor.execute(sql_statement, [full_name])
-            id = cursor.fetchone()[0] 
-            if id is None:
+            res = cursor.fetchone()
+            if res is None:
                 return 
-            return id
+            return res[0]
+
+print(check_if_has_prescription('John ssss'))
 
 #Finde frem til hvilken farmaceut der har givet medicinen, hvilket er random 
 def pharmacist_to_give_prescription(pharmacy_id):

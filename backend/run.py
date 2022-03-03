@@ -6,7 +6,7 @@ import db_methods
 
 def main():
     renewals = select_new_renewals()
-    if renewals is not empty:
+    if renewals:
         for renewal in renewals:
             patient_name = renewal[0]
             medicine = renewal[1]
@@ -14,7 +14,7 @@ def main():
             utils.send_mail(patient_name, medicine, email)
 
     prescription_id = db_methods.check_if_has_prescription(patient_name)
-    if prescription_id is not None:
+    if prescription_id:
         pharmacy_id = randint(1,3)
         db_methods.accept_prescription(prescription_id, pharmacy_id)
         pharmacist, pharmacy = db_methods.pharmacist_to_give_prescription(pharmacy_id)
