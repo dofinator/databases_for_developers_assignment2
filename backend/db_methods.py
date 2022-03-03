@@ -1,13 +1,12 @@
-from audioop import add
+from asyncio.windows_events import NULL
 from random import randint
-from numpy import full
 from connection import conn
 from random_address import real_random_address
 import names
 from psycopg2 import sql
 import traceback
 from random import randint
-from utils import send_mail
+
 
 def generate_sql_insert(db_table,returning,obj,conn,cursor):
     try:
@@ -84,11 +83,13 @@ def insert_pharmacists():
                     import sys
                     sys.exit()
 
+#Recept lavet af læge
 def create_prescription(new_prescription):
     with conn:
         with conn.cursor() as cursor:
             generate_sql_insert("prescription", "null", new_prescription, conn, cursor)
 
+#Finde alle patienter som skal have fornyet deres medicin
 def select_new_renewals():
     with conn:
         with conn.cursor() as cursor:
@@ -97,6 +98,35 @@ def select_new_renewals():
             result_set = cursor.fetchall()
             return result_set
 
-renewals = select_new_renewals()
-for renewal in renewals:
-    send_mail(renewal[0], renewal[1], renewal[2])
+#KAN IKKE FÅ IF STATEMENT TIL AT FUNGERE HVIS DER ER IKKE ER NOGLE RECEPTER MED NAVNET
+def check_if_has_prescription(full_name):
+    with conn:
+        with conn.cursor() as cursor:
+            sql_statement = "Select id from db_assignment2.prescription where fk_patient_id = (select id from db_assignment2.patient p where full_name = %s)"
+            cursor.execute(sql_statement, [full_name])
+            id = cursor.fetchone()[0] 
+            if id is None:
+                return 
+            return id
+
+#Finde frem til hvilken farmaceut der har givet medicinen, hvilket er random 
+def pharmacist_to_give_prescription(pharmacy_id):
+    with conn:
+        with conn.cursor() as cursor:
+            sql_statement = "select p.name, p2.name from db_assignment2.pharmacist p inner join db_assignment2.pharmacy p2 on p.fk_pharmacy_id = p2.id where fk_pharmacy_id = %s order by random() limit 1"
+            cursor.execute(sql_statement, [pharmacy_id])
+            result = cursor.fetchone()
+            return result[0], result[1]
+
+#Metode til at se om patienten har hentet medicin
+def accept_prescription(pharmacy_id, prescription_id):
+    with conn:
+        with conn.cursor() as cursor:
+            prescription = {}
+            prescription["fk_prescription_id"] = prescription_id
+            prescription["fk_pharmacy_id"] = pharmacy_id
+            generate_sql_insert("accepted_prescription", "null", prescription, conn, cursor)
+
+
+
+

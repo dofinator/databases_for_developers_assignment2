@@ -3,6 +3,7 @@ from email import message
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
+import csv
 
 def send_mail(name, medicine, email):
     from_addr = 'praktikrealview@gmail.com'
@@ -41,3 +42,9 @@ methods selects and return data from the property bag, based on given parameters
 where message_name specifies ex. 'proklama', 'dekret' or 'skiftesamling'
 and filed_group is the groups og wich a proklama contains, ex. 'afdøde', afødedes aegtefaelle
 """
+
+def write_prescription_info_to_csv(patient_name, medicine, pharmacy, pharmacist):
+    with open('backend\prescription_logging.txt', 'a') as file:
+        file.write("""Patient who picked up the prescription: {}\nfor the the following medicine: {}\nat this pharmacy: {}\nand handled by the following pharmacist: {} \n\n""".format(patient_name, medicine, pharmacy, pharmacist))
+        file.close()
+
